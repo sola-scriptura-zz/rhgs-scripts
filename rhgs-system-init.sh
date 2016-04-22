@@ -23,16 +23,17 @@
 # 11/09/2015 YJ : add function for multi pv,vg,lv device 
 # 11/09/2015 YJ : add function for log-device pv,vg,lv
 # 11/09/2015 YJ : copy kernel tunning parameter for gluster
+# 22/04/2016 YJ : add parameter handling, update Readme.md
 
 ##################
 # Load the configuration file for gluster ininitial setting value
-confile="./sds_gluster.conf"
+confile="./gluster.conf"
 [ -r "${confile}" ] && [ -f "${confile}" ] && source "${confile}"
 
 ###########################
 # for logging 
-#exec > >(tee ${logfile})
-#exec 2>&1
+exec > >(tee ${logfile})
+exec 2>&1
 
 ###########################
 # default function
@@ -297,6 +298,43 @@ function send_config {
 }
 
 function main {
+    while getopts ":nhu:" OPT; do
+    case "$OPT" in
+        u)
+            case $OPTARG in
+                object)
+                    workload=$OPTARG
+                    inode_size=1024
+                    ;;
+                virtual)
+                    workload=$OPTARG
+                    # Future
+                    # tune_profile=rhs-virtualstore-support
+                    ;;
+                *)
+                    echo "Unrecognized option."
+                    usage # print usage and exit
+            esac
+            ;;
+        n)
+	    dryrun=1
+            ;;
+        h)
+	    usage # print usage and exit
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG"
+	    usage # print usage and exit
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument."
+            usage # print usage and exit
+            ;;
+    esac
+    done
+    echo "Setting workload to $workload."
+	send_config
+    [ $dryrun -eq 1 ] && return 0
 	add_firewallrule
 	mk_gpt_lvmpart
 	create_pv 
@@ -306,9 +344,8 @@ function main {
 	mkfsb
 	mountb
 	enable_dmcache
-	send_config
-
 	return $?	
 }
 
-main
+# Call Main
+main "$@";
