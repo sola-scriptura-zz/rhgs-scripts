@@ -2,10 +2,27 @@ RHGS init scripts for RHEL7 base system
 =======
 Introduction
 -----------
-몇고객사에 다수의 글러스터 볼륨을 생성하면서, 디스크 초기화를 자동화하는 스크립트를 작성하였습니다. 기본적으로 brick 을 구성하기 위해서는 Raid 구성에 맞추어 lvm pool 을 만들어야 합니다. 이것은 snapshot 기능을 위한 필수 사항이며, zeroing 옵션도 성능을 위해서 권고 됩니다. 관련한 세부적인 설정들을 gdeploy 등으로 할 수도 있습니다.
+디스크 초기화를 자동화하는 스크립트를 작성하였습니다. 기본적으로 brick 을 구성하기 위해서는 Raid 구성에 맞추어 lvm pool 을 만들어야 합니다. 이것은 snapshot 기능을 위한 필수 사항이며, zeroing 옵션도 성능을 위해서 권고 됩니다. 관련한 세부적인 설정들을 gdeploy 등으로 할 수도 있습니다. gdeploy 를 이용할 경우 python 과 ansible 이 사전 설치 되어있어야 합니다.
 
+인터프린터로 bash 를 이용하기 때문에 sh <script-name.sh> 같은 형태로 실행 할 경우, 정상적으로 동작되지 않을 수 있습니다. 다음과 같은 형태로 실행하십시오. 
 
-    function list:
+실행방법 : 
+# chmod +x ./rhgs-init-script.sh 
+# ./rhgs-init-script.sh
+
+### 구성 내역 
+* rhgs-init-script.sh
+  rhgs 의 서버노드를 초기화 하고 brick 구성을 하는 스크립트, 볼륨은 별도의 cli 명령을 통하여 구성하여야 합니다. 
+* gluster.conf
+  각 서버의 brick 구성을 위한 세부 설정값 및 디바이스 정보를 저장한 설정 파일
+* gvp-client.sh
+  클라이언트에서 rhgs 를 마운트 하여 사용할때 볼륨의 성능을 측정하기 위한 스크립트. gluster volume profile 기능을 이용할 경우 gluster-profile-analysis (url : https://github.com/cristov/gluster-profile-analysis ) 을 이용하여 fops 의 세부적인 성능 데이터를 볼 수 있습니다.
+* netperf-stream-pairs.sh
+  netperf 를 이용하여 10GE 이상의 네트워크에서 NIC 가 정상적으로 동작하는지 테스트 하는 스크립트
+* size_histogram.py
+  기존 운영하는 볼륨의 file size 의 표준분포를 계산하여 brick 의 데이터 구조를 설정하기 위한 기반 데이터를 추출하는 스크립트
+
+### rhgs-init-script.sh function list:
     * add_firewallrule
         firewalld  방화벽 구성을 richrule 로 Gluster 서비스를 위한 포트들을 열어줍니다.
 	* mk_gpt_lvmpart
