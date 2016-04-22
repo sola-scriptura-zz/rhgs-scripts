@@ -2,15 +2,17 @@ RHGS init scripts for RHEL7 base system
 =======
 Introduction
 -----------
-디스크 초기화를 자동화하는 스크립트를 작성하였습니다. 기본적으로 brick 을 구성하기 위해서는 Raid 구성에 맞추어 lvm pool 을 만들어야 합니다. 이것은 snapshot 기능을 위한 필수 사항이며, zeroing 옵션도 성능을 위해서 권고 됩니다. 관련한 세부적인 설정들을 gdeploy 등으로 할 수도 있습니다. gdeploy 를 이용할 경우 python 과 ansible 이 사전 설치 되어있어야 합니다.
+디스크 초기화를 자동화하는 스크립트를 작성하였습니다. 기본적으로 brick 을 구성하기 위해서는 Raid 구성에 맞추어 lvm pool 을 만들어야 합니다. 이것은 snapshot 기능을 위한 필수 사항이며, zeroing 옵션도 성능을 위해서 권고 됩니다. 관련한 세부적인 설정들을 gdeploy 등으로 할 수도 있습니다. gdeploy 를 이용할 경우 python 과 ansible 이 사전 설치 되어 있어야 합니다.
 
 인터프린터로 bash 를 이용하기 때문에 sh <script-name.sh> 같은 형태로 실행 할 경우, 정상적으로 동작되지 않을 수 있습니다. 다음과 같은 형태로 실행하십시오. 
 
-실행방법 : 
+실행방법: 
+```{r, engine='bash', count_lines}
 # chmod +x ./rhgs-init-script.sh 
 # ./rhgs-init-script.sh
+```
 
-### 구성 내역 
+### 구성 내역:
 * rhgs-init-script.sh
   rhgs 의 서버노드를 초기화 하고 brick 구성을 하는 스크립트, 볼륨은 별도의 cli 명령을 통하여 구성하여야 합니다. 
 * gluster.conf
